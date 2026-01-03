@@ -119,7 +119,7 @@ install_packages=net-tools,python3-pip
 ## 🧪 실행 방법
 ```bash
 # 사전 검증
-ansible-playbook -i host.ini ubuntu_ansible.yml
+ansible-playbook -i host.ini ubuntu_ansible.yml --check --diff
 
 # 실행
 ansible-playbook -i host.ini ubuntu_ansible.yml
