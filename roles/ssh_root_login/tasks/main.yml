@@ -7,7 +7,6 @@
     regexp: '^#?PermitRootLogin'
     line: 'PermitRootLogin yes'
     state: present
-    backup: yes
   notify: Reload sshd
 
 

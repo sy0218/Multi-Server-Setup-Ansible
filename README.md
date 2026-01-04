@@ -117,6 +117,14 @@ install_packages=net-tools,python3-pip
 ### 🔹 ssh_root_login → [`📂 main.yml`](./roles/ssh_root_login/tasks/ssh_root_login.md)
 - SSH root 계정 로그인 허용 설정
 ---
+### 🔹 timezone → [`📂 main.yml`](./roles/timezone/tasks/timezone.md)
+- 시스템 Time Zone 설정
+- `Asia/Seoul` 기준 시간 적용
+---
+### 🔹 ntp → [`📂 main.yml`](./roles/ntp/tasks/ntp.md)
+- NTP 서버 설정
+- systemd-timesyncd 기반 시간 동기화
+---
 <br>
 
 ## 🧪 실행 방법

@@ -1,0 +1,17 @@
+# -----------------------------------------------------
+# Time zone
+# -----------------------------------------------------
+# Time zone 설정
+- name: "Set Time zone to Asia/Seoul"
+  command: timedatectl set-timezone Asia/Seoul
+
+# -----------------------------------------------------
+# Time zone 설정 검증
+# -----------------------------------------------------
+# Time zone 검증
+- name: "Assert.. Time zone is Asia/Seoul"
+  assert:
+    that:
+      - "'Asia/Seoul' in lookup('pipe', 'timedatectl')"
+    success_msg: "Good!.. | Time zone is set to Asia/Seoul"
+    fail_msg: "ERROR!.. | Time zone is NOT Asia/Seoul"
