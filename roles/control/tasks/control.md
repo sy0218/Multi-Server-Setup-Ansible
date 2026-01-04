@@ -5,10 +5,29 @@ password 기반 SSH 통신을 사용하기 위해 필요한 **sshpass 설치 및
 ---
 <br>
 
-## 🧩 구성 파일
-- `main.yml`  
-  - sshpass 설치
-  - 설치 여부 검증
+## 🧩 main.yml
+```bash
+# -----------------------------------------------------
+# Control Node 기본 설정
+# -----------------------------------------------------
+
+# sshpass 설치 (password 기반 SSH 통신용)
+- name: "Install sshpass on Control node"
+  apt:
+    name: sshpass
+    state: present
+    update_cache: yes
+
+# sshpass 설치 확인
+- name: "Check.. sshpass.."
+  command: sshpass -V
+  register: sshpass_check
+  changed_when: false
+
+- name: "Status.. sshpass.."
+  debug:
+    msg: "Good!.. | {{ sshpass_check.stdout_lines[0] }} installed successfully.."
+```
 ---
 <br>
 
