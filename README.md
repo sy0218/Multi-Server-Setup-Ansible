@@ -114,6 +114,9 @@ install_packages=net-tools,python3-pip
 - 시스템 Locale 한국어 설정
 - UTF-8 환경 구성
 ---
+### 🔹 ssh_root_login → [`📂 main.yml`](./roles/ssh_root_login/tasks/ssh_root_login.md)
+- SSH root 계정 로그인 허용 설정
+---
 <br>
 
 ## 🧪 실행 방법
