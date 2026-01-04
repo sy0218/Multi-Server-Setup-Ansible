@@ -28,5 +28,6 @@
 #    - ufw
 #    - locale_ko
 #    - ssh_root_login
-    - timezone
-    - ntp
+#    - timezone
+#    - ntp
+    - open_files

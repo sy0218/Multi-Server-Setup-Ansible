@@ -125,6 +125,10 @@ install_packages=net-tools,python3-pip
 - NTP 서버 설정
 - systemd-timesyncd 기반 시간 동기화
 ---
+### 🔹 open_files → [`📂 main.yml`](./roles/open_files/tasks/open_files.md)
+- root 계정 open files(nofile) 제한 증가
+- `/etc/security/limits.conf` 기반 설정
+---
 <br>
 
 ## 🧪 실행 방법
