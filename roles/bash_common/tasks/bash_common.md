@@ -1,0 +1,91 @@
+# 🧑‍💻 시스템 공통 Bash 환경 설정 (Common Bash)
+- 모든 서버에 공통 Bash 환경 설정을 적용하여 운영 일관성을 유지한
+- 모든 서버에 공통 Bash 환경 설정을 적용하여 운영 일관성을 유지한
+- 사용자 실수 방지를 위해 rm / cp / mv 명령에 -i 옵션 alias를 적용한다.
+- Bash 프롬프트(PS1)를 통일하여 작업 위치를 명확히 한다.
+- Bash 프롬프트(PS1)를 통일하여 작업 위치를 명확히 한다.
+---
+<br>
+
+## 🧩 main.yml
+```bash
+# -----------------------------------------------------
+# 시스템 공통 Bash 환경 설정
+# -----------------------------------------------------
+
+- name: "Ensure /etc/job_project.conf exists"
+  file:
+    path: /etc/job_project.conf
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Apply common bash settings to system targets"
+  vars:
+    bashrc_targets:
+      - /root/.bashrc
+      - /etc/skel/.bashrc
+  block:
+    - name: "Inject common bash configuration"
+      blockinfile:
+        path: "{{ item }}"
+        marker: "# {mark} ANSIBLE COMMON BASH CONFIG"
+        block: |
+          source /etc/job_project.conf
+          alias rm='rm -i'
+          alias cp='cp -i'
+          alias mv='mv -i'
+          PS1='[\h:$PWD] '
+        create: yes
+      loop: "{{ bashrc_targets }}"
+      loop_control:
+        label: "{{ item }}"
+      no_log: true
+
+# -----------------------------------------------------
+# 검증
+# -----------------------------------------------------
+
+- name: "Verify common bash config applied"
+  shell: |
+    grep -q "ANSIBLE COMMON BASH CONFIG" /root/.bashrc
+  register: bash_check
+  changed_when: false
+
+- name: "Validation result"
+  debug:
+    msg: "Common bash environment is correctly applied"
+  when: bash_check.rc == 0
+```
+---
+<br>
+
+## 🛠 작업 내용
+### 1️⃣ 공통 환경 설정 파일 생성
+- /etc/job_project.conf 파일을 생성
+- root 소유 및 0644 권한으로 관리
+- 공통 환경 변수 및 설정을 분리 관리 가능
+---
+### 2️⃣ Bash 공통 설정 적용
+- /root/.bashrc, /etc/skel/.bashrc 대상 적용
+- blockinfile 사용으로 멱등성 보장
+- 공통 환경 파일 source
+- rm / cp / mv -i alias
+- rm / cp / mv -i alias
+---
+### 3️⃣ 설정 검증
+- root 계정 .bashrc에 설정 블록 존재 여부 확인
+- 설정 누락 시 실패하도록 검증 로직 구성
+---
+<br>
+
+## ✅ 실행 결과 예시
+```bash
+TASK [Validation result]
+ok: [192.168.56.60] => {
+    "msg": "Common bash environment is correctly applied"
+}
+~
+```
+---

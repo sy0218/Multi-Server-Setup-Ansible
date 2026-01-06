@@ -52,7 +52,11 @@ ansible_become=true
 ansible_become_password=vagrant
 root_password="1234"
 
+# 설치할 기본 패키지 목록
 install_packages=net-tools,python3-pip
+
+# 설치할 자바 버전
+java_version=11
 ```
 ---
 <br>
@@ -88,11 +92,16 @@ install_packages=net-tools,python3-pip
     - cloud_init
     - ufw
     - locale_ko
-    - control
-    - ntp
-    - open_files
     - ssh_root_login
     - timezone
+    - ntp
+    - open_files
+    - logrotate
+    - shell_default
+    - java
+    - package_version_lock
+    - package_update_lock
+    - bash_common
 ```
 ---
 <br>
@@ -145,6 +154,18 @@ install_packages=net-tools,python3-pip
 - host.ini 변수 기반 Java 버전 선택 설치
 - OpenJDK 8 / 11 / 17 / 21 유연한 적용
 ---
+### 🔹 package_version_lock → [`📂 main.yml`](./roles/package_version_lock/tasks/package_version_lock.md)
+- 커널(Kernel) 및 Java 패키지 버전 고정
+---
+### 🔹 package_update_lock → [`📂 main.yml`](./roles/package_update_lock/tasks/package_update_lock.md)
+- APT 패키지 자동 업데이트 비활성화
+- unattended-upgrades 및 주기적 패키지 업데이트 차단
+---
+### common_bash → [`📂 main.yml`](./roles/common_bash/tasks/common_bash.md)
+- 시스템 공통 Bash 환경 설정 적용
+- `/etc/job_project.conf` 기반 환경 통합 관리
+- rm / cp / mv 보호 alias 및 PS1 프롬프트 통일
+---
 <br>
 
 ## 🧪 실행 방법
@@ -190,7 +211,13 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── shell_default/
     │   └── tasks/main.yml
-    └── java/
+    ├── java/
+    │   └── tasks/main.yml
+    ├── bash_common/
+    │   └── tasks/main.yml
+    ├── package_version_lock/
+    │   └── tasks/main.yml
+    └── package_update_lock/
         └── tasks/main.yml
 ```
 ---
