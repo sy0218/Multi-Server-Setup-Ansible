@@ -1,0 +1,20 @@
+# -----------------------------------------------------
+# Root Password 설정
+# -----------------------------------------------------
+# root 패스워드 설정
+- name: "Set Root Password"
+  user:
+    name: root
+    password: "{{ root_password | password_hash('sha512') }}"
+    shell: /bin/bash
+
+# -----------------------------------------------------
+# Root Password 설정 검증
+# -----------------------------------------------------
+# 검증
+- name: "Assert root password set"
+  assert:
+    that:
+      - root_password is defined
+    success_msg: "Good!.. | Root password configured"
+    fail_msg: "ERROR!.. | Root password not configured"

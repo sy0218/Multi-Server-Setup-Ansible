@@ -114,6 +114,9 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
 - Control Node 기본 설정
 - password 기반 SSH 사용을 위한 sshpass 설치
 ---
+### 🔹 root_password → [`📂 main.yml`](./roles/root_password/tasks/root_password.md)
+- root 계정 패스워드 설정
+---
 ### 🔹 packages → [`📂 main.yml`](./roles/packages/tasks/packages.md)
 - 공통 필수 패키지 설치
 - install_packages 변수 기반 동적 설치

@@ -1,14 +1,6 @@
 # -----------------------------------------------------
-# Root Password & Install Packages
+# Install Packages
 # -----------------------------------------------------
-
-# root 계정 패스워드 설정
-- name: "Set Root Password"
-  user:
-    name: root
-    password: "{{ root_password | password_hash('sha512') }}"
-    shell: /bin/bash
-
 # 기본 유틸리티 패키지 설치
 - name: "Install base packages"
   apt:
@@ -16,12 +8,18 @@
     state: present
     update_cache: yes
 
+# -----------------------------------------------------
+# Root Password 설정 검증
+# -----------------------------------------------------
 # 패키지 설치 검증
-- name: "Check.. dpkg packages.."
+- name: "Check installed packages"
   shell: dpkg -l | grep -E "{{ install_packages | replace(',', '|') }}"
   register: packages_check
   changed_when: false
 
-- name: "Status.. dpkg packages.."
-  debug:
-    msg: "Good!.. | {{ packages_check.stdout_lines }} installed successfully.."
+- name: "Assert packages installed"
+  assert:
+    that:
+      - packages_check.rc == 0
+    success_msg: "Good!.. | Packages installed successfully"
+    fail_msg: "ERROR!.. | Some packages are missing"
