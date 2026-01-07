@@ -41,9 +41,9 @@ ansible --version
 ## 🖥 인벤토리 ( host.ini )
 ```bash
 [Ubuntu_Servers]
-192.168.56.60
-192.168.56.61
-192.168.56.62
+ap ansible_host=192.168.56.60
+s1   ansible_host=192.168.56.61
+s2   ansible_host=192.168.56.62
 
 [Ubuntu_Servers:vars]
 ansible_user=vagrant
@@ -106,6 +106,8 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
     - package_version_lock
     - package_update_lock
     - bash_common
+    - ssh_keygen
+    - etc_hosts
 ```
 ---
 <br>
@@ -173,6 +175,14 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
 - `/etc/job_project.conf` 기반 환경 통합 관리
 - rm / cp / mv 보호 alias 및 PS1 프롬프트 통일
 ---
+### 🔹 ssh_keygen → [`📂 main.yml`](./roles/ssh_keygen/tasks/ssh_keygen.md)
+- SSH 무비밀번호 접속 구성 및 검증
+- 모든 서버에서 SSH Key 자동 생성
+- 모든 서버 간 공개키 상호 공유
+---
+### 🔹 etc_hosts → [`📂 main.yml`](./roles/etc_hosts/tasks/etc_hosts.md)
+- 인벤토리 기반 `/etc/hosts` 파일 자동 생성
+---
 <br>
 
 ## 🧪 실행 방법
@@ -188,10 +198,14 @@ ansible-playbook -i host.ini ubuntu_ansible.yml
 
 ## 📁 디렉토리 구성도
 ```bash
+## 📁 디렉토리 구성도
+```bash
 multi-server-setup-ansible/
 ├── host.ini
 ├── ubuntu_ansible.yml
 └── roles/
+    ├── root_password/
+    │   └── tasks/main.yml
     ├── cloud_init/
     │   └── tasks/main.yml
     ├── control/
@@ -224,7 +238,11 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── package_version_lock/
     │   └── tasks/main.yml
-    └── package_update_lock/
+    ├── package_update_lock/
+    │   └── tasks/main.yml
+    ├── ssh_keygen/
+    │   └── tasks/main.yml
+    └── etc_hosts/
         └── tasks/main.yml
 ```
 ---

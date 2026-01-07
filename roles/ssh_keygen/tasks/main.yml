@@ -1,0 +1,58 @@
+# -----------------------------------------------------
+# 모든 서버 SSH Key 생성 및 상호 공유
+# -----------------------------------------------------
+
+# SSH 키 쌍 생성
+- name: "Create 4096-bit RSA key pair"
+  openssh_keypair:
+    path: /root/.ssh/id_rsa
+    type: rsa
+    size: 4096
+    owner: root
+    group: root
+    mode: '0600'
+    force: no
+  register: ssh_key
+
+# 공개키를 host fact로 저장
+- name: "Save public key as host fact"
+  set_fact:
+    my_public_key: "{{ ssh_key.public_key }}"
+
+# 모든 서버 공개키를 리스트로 수집
+- name: "Collect all server public keys"
+  set_fact:
+    all_public_keys: >-
+      {{
+        groups['Ubuntu_Servers']
+        | map('extract', hostvars, 'my_public_key')
+        | list
+      }}
+
+# authorized_keys에 모든 서버 공개키 배포
+- name: "Distribute all server public keys"
+  authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: present
+  loop: "{{ all_public_keys }}"
+
+# authorized_keys 권한 보정
+- name: "Ensure authorized_keys permission"
+  file:
+    path: /root/.ssh/authorized_keys
+    owner: root
+    group: root
+    mode: '0600'
+
+# -----------------------------------------------------
+# ssh_keygen 검증
+# -----------------------------------------------------
+
+# 공개키가 authorized_keys에 있는지 검증
+- name: "Verify SSH key authorization"
+  assert:
+    that:
+      - my_public_key in lookup('file', '/root/.ssh/authorized_keys')
+    success_msg: "Good!.. | SSH key exchange completed"
+    fail_msg: "ERROR!.. | SSH key exchange FAILED"

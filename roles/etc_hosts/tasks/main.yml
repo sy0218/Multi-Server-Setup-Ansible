@@ -1,0 +1,28 @@
+# -----------------------------------------------------
+# /etc/hosts 생성 (무조건 덮어쓰기)
+# -----------------------------------------------------
+
+- name: "Create /etc/hosts from inventory"
+  copy:
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      127.0.0.1   localhost
+      ::1         localhost
+
+      {% for host in groups['Ubuntu_Servers'] %}
+      {{ hostvars[host]['ansible_host'] }} {{ host }}
+      {% endfor %}
+
+# -----------------------------------------------------
+# /etc/hosts 설정 검증
+# -----------------------------------------------------
+
+- name: "Assert /etc/hosts generated"
+  assert:
+    that:
+      - groups['Ubuntu_Servers'] | length > 0
+    success_msg: "Good!.. | /etc/hosts overwritten successfully"
+    fail_msg: "ERROR!.. | Ubuntu_Servers group is empty"
