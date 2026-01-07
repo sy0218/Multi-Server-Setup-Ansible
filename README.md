@@ -41,7 +41,7 @@ ansible --version
 ## 🖥 인벤토리 ( host.ini )
 ```bash
 [Ubuntu_Servers]
-ap ansible_host=192.168.56.60
+ap   ansible_host=192.168.56.60
 s1   ansible_host=192.168.56.61
 s2   ansible_host=192.168.56.62
 
