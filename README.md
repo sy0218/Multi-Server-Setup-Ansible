@@ -325,7 +325,7 @@ redis_container=job_redis
 ### 🔹 kafka → [`📂 main.yml`](./roles/kafka/tasks/kafka.md)
 - Kafka 설치
 ---
-### redis → [`📂 main.yml`](./roles/redis/tasks/main.yml)
+### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/main.yml)
 - Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
 ---
 <br>
