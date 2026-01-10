@@ -1,0 +1,92 @@
+# -----------------------------------------------------
+# 1. ZooKeeper 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create ZooKeeper base directory"
+  file:
+    path: "{{ zookeeper_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. ZooKeeper 다운로드
+# -----------------------------------------------------
+- name: "Download ZooKeeper"
+  get_url:
+    url: "{{ zookeeper_url }}"
+    dest: "/tmp/{{ zookeeper_url | basename }}"
+    mode: '0644'
+
+# -----------------------------------------------------
+# 3. ZooKeeper 압축 해제
+# -----------------------------------------------------
+- name: "Extract ZooKeeper"
+  unarchive:
+    src: "/tmp/{{ zookeeper_url | basename }}"
+    dest: "{{ zookeeper_install_dir }}"
+    remote_src: yes
+    creates: "{{ zookeeper_install_dir }}/{{ (zookeeper_url | basename) | regex_replace('.tar.gz','') }}"
+
+# -----------------------------------------------------
+# 4. ZooKeeper 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create ZooKeeper symlink"
+  file:
+    src: "{{ zookeeper_install_dir }}/{{ (zookeeper_url | basename) | regex_replace('.tar.gz','') }}"
+    dest: "{{ zookeeper_install_dir }}/zookeeper"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. ZooKeeper 데이터 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create ZooKeeper data directory"
+  file:
+    path: "{{ zookeeper_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+
+# -----------------------------------------------------
+# 6. myid 설정
+# -----------------------------------------------------
+- name: "Set ZooKeeper myid"
+  copy:
+    dest: "{{ zookeeper_data_dir }}/myid"
+    content: "{{ zookeeper_myid }}\n"
+    owner: root
+    group: root
+    mode: '0644'
+
+# -----------------------------------------------------
+# 7. ZooKeeper 설치 검증
+# -----------------------------------------------------
+- name: "Check ZooKeeper binary existence"
+  stat:
+    path: "{{ zookeeper_install_dir }}/zookeeper/bin/zkServer.sh"
+  register: zk_bin_check
+
+- name: "Verify ZooKeeper Installation"
+  assert:
+    that:
+      - zk_bin_check.stat.exists
+    fail_msg: "ZooKeeper binary not found at {{ zookeeper_install_dir }}/zookeeper/bin/zkServer.sh. Please check extraction or symlink."
+    success_msg: "ZooKeeper installation verified: Binary exists at the expected path."
+
+# -----------------------------------------------------
+# 8. myid 설정 검증
+# -----------------------------------------------------
+- name: "Read myid file content"
+  slurp:
+    src: "{{ zookeeper_data_dir }}/myid"
+  register: myid_content
+
+- name: "Verify ZooKeeper myid content"
+  assert:
+    that:
+      - "myid_content['content'] | b64decode | trim == zookeeper_myid | string"
+    fail_msg: "myid mismatch! Expected: {{ zookeeper_myid }}, Found: {{ myid_content['content'] | b64decode | trim }}"
+    success_msg: "ZooKeeper myid validation passed: ID is correctly set to {{ zookeeper_myid }}."

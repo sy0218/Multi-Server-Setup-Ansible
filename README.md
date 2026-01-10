@@ -82,6 +82,23 @@ s2
 # -------------------------------------------------
 [Docker_Servers:vars]
 docker_data_root=/docker
+
+
+# -------------------------------------------------
+# Zookeeper_Servers 서버 그룹
+# -------------------------------------------------
+[Zookeeper_Servers]
+ap zookeeper_myid=1
+s1 zookeeper_myid=2
+s2 zookeeper_myid=3
+
+# -------------------------------------------------
+# ZooKeeper 공통 변수
+# -------------------------------------------------
+[Zookeeper_Servers:vars]
+zookeeper_install_dir=/application
+zookeeper_data_dir=/application/id_zookeeper
+zookeeper_url=https://archive.apache.org/dist/zookeeper/zookeeper-3.7.2/apache-zookeeper-3.7.2-bin.tar.gz
 ```
 ---
 <br>
@@ -144,6 +161,20 @@ docker_data_root=/docker
 
   roles:
     - docker
+
+# =====================================================
+# Zookeeper Servers
+# =====================================================
+- name: "[ Zookeeper_Servers Settings.. ]"
+  hosts: Zookeeper_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - zookeeper
 ```
 ---
 <br>
@@ -222,6 +253,8 @@ docker_data_root=/docker
 ### 🔹 docker → [`📂 main.yml`](./roles/docker/tasks/docker.md)
 - Docker Engine 공식 저장소 기반 설치
 ---
+### 🔹 zookeeper → [`📂 main.yml`](./roles/zookeeper/tasks/zookeeper.md)
+- ZooKeeper 설치
 <br>
 
 ## 🧪 실행 방법
@@ -281,8 +314,10 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── etc_hosts/
     │   └── tasks/main.yml
-    └── docker/
-        ├── handlers/main.yml
-        └── tasks/main.yml
+    ├── docker/
+    │   ├── handlers/main.yml
+    │   └── tasks/main.yml
+    └── zookeeper/
+         └── tasks/main.yml
 ```
 ---

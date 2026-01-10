@@ -53,4 +53,18 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - docker
+#    - docker
+
+# =====================================================
+# Zookeeper Servers
+# =====================================================
+- name: "[ Zookeeper_Servers Settings.. ]"
+  hosts: Zookeeper_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - zookeeper
