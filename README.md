@@ -301,7 +301,7 @@ redis_container=job_redis
 - 시스템 기본 `/bin/sh` 설정 변경
 - dash 비활성화 및 bash 기본 shell 적용
 ---
-### 🔹 node_exporter → [`📂 main.yml`](./roles/node_export/tasks/node_exporter.md)
+### 🔹 node_export → [`📂 main.yml`](./roles/node_export/tasks/node_export.md)
 - Prometheus Node Exporter 설치
 ---
 ### 🔹 java → [`📂 main.yml`](./roles/java/tasks/java.md)
@@ -391,7 +391,7 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── java/
     │   └── tasks/main.yml
-    ├── node_exporter/
+    ├── node_export/
     │   └── tasks/main.yml
     ├── bash_common/
     │   └── tasks/main.yml
