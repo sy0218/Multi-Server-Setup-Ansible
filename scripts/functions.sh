@@ -45,3 +45,28 @@ kafka_ctl() {
             ;;
     esac
 }
+
+# ----------------------------------------
+# 인자 체크 함수
+# ----------------------------------------
+check_topic_arg() {
+    local TOPIC_NAME="$1"
+    local SCRIPT_NAME="$2"
+
+    if [ -z "${TOPIC_NAME}" ]; then
+        log_error "이 기능은 토픽명이 인자로 필요합니다."
+        echo "사용법: ${SCRIPT_NAME} [토픽명]"
+        exit 1
+    fi
+}
+
+# ----------------------------------------
+# Redis 명령 실행 함수 (Docker 기반)
+# ----------------------------------------
+run_redis() {
+    local CONTAINER="$1"
+    local PASS="$2"
+    shift 2  # 앞의 인자 2개(컨테이너, 비번)를 제거하고 나머지($@)를 명령어 인자로 사용
+
+    docker exec -i "${CONTAINER}" redis-cli -a "${PASS}" "$@" 2>/dev/null
+}
