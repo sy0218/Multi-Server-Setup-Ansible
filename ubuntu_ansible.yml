@@ -115,6 +115,20 @@
 #    - elasticsearch
 
 # =====================================================
+# Kibana Servers
+# =====================================================
+- name: "[ Kibana_Servers Settings.. ]"
+  hosts: Kibana_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - kibana
+
+# =====================================================
 # Redis Servers
 # =====================================================
 - name: "[ Redis_Servers Settings.. ]"
@@ -140,4 +154,4 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - postgresql
+#    - postgresql

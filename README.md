@@ -182,6 +182,21 @@ elasticsearch_version=8.4.2
 
 ###################################################
 # -------------------------------------------------
+# Kibana 서버 그룹
+# -------------------------------------------------
+[Kibana_Servers]
+ap
+
+# -------------------------------------------------
+# Kibana 공통 변수
+# -------------------------------------------------
+[Kibana_Servers:vars]
+kibana_version=8.4.2
+elasticsearch_hosts=http://192.168.122.63:9200,http://192.168.122.64:9200,http://192.168.122.65:9200
+###################################################
+
+###################################################
+# -------------------------------------------------
 # Redis 서버 그룹
 # -------------------------------------------------
 [Redis_Servers]
@@ -337,6 +352,20 @@ pg_version=14
     - elasticsearch
 
 # =====================================================
+# Kibana Servers
+# =====================================================
+- name: "[ Kibana_Servers Settings.. ]"
+  hosts: Kibana_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - kibana
+
+# =====================================================
 # Redis Servers
 # =====================================================
 - name: "[ Redis_Servers Settings.. ]"
@@ -467,6 +496,9 @@ pg_version=14
 ### 🔹 elasticsearch → [`📂 main.yml`](./roles/elasticsearch/tasks/elasticsearch.md)
 - Elasticsearch APT 기반 설치
 ---
+### 🔹 kibana → [`📂 main.yml`](./roles/kibana/tasks/kibana.md)
+- Kibana APT 기반 설치
+---
 ### 🔹 postgresql → [`📂 main.yml`](./roles/postgresql/tasks/postgresql.md)
 - PostgreSQL Docker 컨테이너 설치 및 실행
 ---
@@ -548,7 +580,9 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── hadoop/
     │   └── tasks/main.yml
-    └── elasticsearch/
+    ├── elasticsearch/
+    │   └── tasks/main.yml
+    └── kibana/
         └── tasks/main.yml
 ```
 ---

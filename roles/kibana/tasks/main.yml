@@ -1,0 +1,75 @@
+# -----------------------------------------------------
+# 1. Elasticsearch GPG Key 등록 (공유)
+# -----------------------------------------------------
+- name: "Add Elasticsearch GPG key"
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+# -----------------------------------------------------
+# 2. Elasticsearch APT repository 추가 (공유)
+# -----------------------------------------------------
+- name: "Add Elasticsearch APT repository"
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/{{ kibana_version.split('.')[0] }}.x/apt stable main"
+    state: present
+    filename: "elastic-{{ kibana_version.split('.')[0] }}.x"
+  register: elastic_repo
+
+# -----------------------------------------------------
+# 3. APT cache 업데이트 (repo 변경 시)
+# -----------------------------------------------------
+- name: "Update apt cache if repo changed"
+  apt:
+    update_cache: yes
+  when: elastic_repo.changed
+
+# -----------------------------------------------------
+# 4. Kibana 설치
+# -----------------------------------------------------
+- name: "Install Kibana {{ kibana_version }}"
+  apt:
+    name: "kibana={{ kibana_version }}"
+    state: present
+
+# -----------------------------------------------------
+# 5. Kibana 설정 (/etc/kibana/kibana.yml)
+# -----------------------------------------------------
+- name: "Configure Kibana server host"
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '^server.host:'
+    line: 'server.host: "0.0.0.0"'
+    create: yes
+
+- name: "Set Elasticsearch URLs in Kibana config"
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '^elasticsearch.hosts:'
+    line: 'elasticsearch.hosts: [{{ elasticsearch_hosts.split(",") | map("quote") | join(", ") }}]'
+    create: yes
+
+# -----------------------------------------------------
+# 6. Kibana 서비스 활성화 및 시작
+# -----------------------------------------------------
+- name: "Enable and start Kibana service"
+  systemd:
+    name: kibana
+    enabled: yes
+    state: started
+
+# -----------------------------------------------------
+# 7. Kibana 설치 검증
+# -----------------------------------------------------
+- name: "Get Kibana version"
+  command: /usr/share/kibana/bin/kibana --version --allow-root
+  register: kibana_version_check
+  changed_when: false
+  failed_when: false
+
+- name: "Verify Kibana installation"
+  assert:
+    that:
+      - "'{{ kibana_version }}' in kibana_version_check.stdout"
+    success_msg: "Good!.. | Kibana {{ kibana_version }} installed successfully"
+    fail_msg: "ERROR!.. | Kibana version mismatch or not installed"
