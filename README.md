@@ -557,6 +557,7 @@ pg_version=14
 ---
 ### 🔹 nifi → [`📂 main.yml`](./roles/nifi/tasks/nifi.md)
 - NiFi 설치 및 심볼릭 링크 생성
+---
 ### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/redis.md)
 - Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
 ---
