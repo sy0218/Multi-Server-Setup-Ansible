@@ -1,0 +1,55 @@
+# -----------------------------------------------------
+# 1. Spark 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Spark install directory"
+  file:
+    path: "{{ spark_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. Spark 다운로드
+# -----------------------------------------------------
+- name: "Download Spark"
+  get_url:
+    url: "{{ spark_url }}"
+    dest: "/tmp/{{ spark_url | basename }}"
+    mode: '0644'
+    force: no
+
+# -----------------------------------------------------
+# 3. Spark 압축 해제
+# -----------------------------------------------------
+- name: "Extract Spark"
+  unarchive:
+    src: "/tmp/{{ spark_url | basename }}"
+    dest: "{{ spark_install_dir }}"
+    remote_src: yes
+    creates: "{{ spark_install_dir }}/{{ (spark_url | basename) | regex_replace('.tgz','') }}"
+
+# -----------------------------------------------------
+# 4. Spark 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create Spark symlink"
+  file:
+    src: "{{ spark_install_dir }}/{{ (spark_url | basename) | regex_replace('.tgz','') }}"
+    dest: "{{ spark_install_dir }}/spark"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. Spark 설치 검증
+# -----------------------------------------------------
+- name: "Check Spark binary"
+  stat:
+    path: "{{ spark_install_dir }}/spark/bin/spark-submit"
+  register: spark_bin_check
+
+- name: "Verify Spark installation"
+  assert:
+    that:
+      - spark_bin_check.stat.exists
+    success_msg: "Good!.. | Spark installed successfully ({{ spark_install_dir }}/spark)"
+    fail_msg: "ERROR!.. | Spark binary not found. Check download or extraction."

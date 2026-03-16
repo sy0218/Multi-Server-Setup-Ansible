@@ -185,6 +185,23 @@ nifi_url=https://archive.apache.org/dist/nifi/1.23.0/nifi-1.23.0-bin.zip
 
 ###################################################
 # -------------------------------------------------
+# Spark 서버 그룹
+# -------------------------------------------------
+[Spark_Servers]
+m1
+m2
+s1
+
+# -------------------------------------------------
+# Spark 공통 변수
+# -------------------------------------------------
+[Spark_Servers:vars]
+spark_install_dir=/application
+spark_url=https://archive.apache.org/dist/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz
+###################################################
+
+###################################################
+# -------------------------------------------------
 # Hadoop 서버 그룹
 # -------------------------------------------------
 [Hadoop_Servers]
@@ -389,6 +406,20 @@ pg_version=14
     - nifi
 
 # =====================================================
+# Spark Servers
+# =====================================================
+- name: "[ Spark_Servers Settings.. ]"
+  hosts: Spark_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - spark
+
+# =====================================================
 # Hadoop Servers
 # =====================================================
 - name: "[ Hadoop_Servers Settings.. ]"
@@ -561,8 +592,11 @@ pg_version=14
 ### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/redis.md)
 - Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
 ---
+### 🔹 spark → [`📂 main.yml`](./roles/spark/tasks/spark.md)
+- Spark 설치 및 심볼릭 링크 구성
+---
 ### 🔹 hadoop → [`📂 main.yml`](./roles/hadoop/tasks/hadoop.md)
-- Hadoop 설치
+- Hadoop 설치 및 심볼릭 링크 구성
 ---
 ### 🔹 elasticsearch → [`📂 main.yml`](./roles/elasticsearch/tasks/elasticsearch.md)
 - Elasticsearch APT 기반 설치
@@ -649,6 +683,8 @@ multi-server-setup-ansible/
     ├── redis/
     │   └── tasks/main.yml
     ├── postgresql/
+    │   └── tasks/main.yml
+    ├── spark/
     │   └── tasks/main.yml
     ├── hadoop/
     │   └── tasks/main.yml

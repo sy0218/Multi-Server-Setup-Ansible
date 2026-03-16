@@ -115,6 +115,20 @@
     #    - nifi
 
 # =====================================================
+# Spark Servers
+# =====================================================
+- name: "[ Spark_Servers Settings.. ]"
+  hosts: Spark_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+#    - spark
+
+# =====================================================
 # Hadoop Servers
 # =====================================================
 - name: "[ Hadoop_Servers Settings.. ]"
@@ -182,4 +196,4 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - postgresql
+#    - postgresql
