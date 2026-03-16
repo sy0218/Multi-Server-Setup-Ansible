@@ -1,0 +1,55 @@
+# -----------------------------------------------------
+# 1. Hive 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Hive install directory"
+  file:
+    path: "{{ hive_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. Hive 다운로드
+# -----------------------------------------------------
+- name: "Download Hive"
+  get_url:
+    url: "{{ hive_url }}"
+    dest: "/tmp/{{ hive_url | basename }}"
+    mode: '0644'
+    force: no
+
+# -----------------------------------------------------
+# 3. Hive 압축 해제
+# -----------------------------------------------------
+- name: "Extract Hive"
+  unarchive:
+    src: "/tmp/{{ hive_url | basename }}"
+    dest: "{{ hive_install_dir }}"
+    remote_src: yes
+    creates: "{{ hive_install_dir }}/{{ (hive_url | basename) | regex_replace('.tar.gz','') }}"
+
+# -----------------------------------------------------
+# 4. Hive 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create Hive symlink"
+  file:
+    src: "{{ hive_install_dir }}/{{ (hive_url | basename) | regex_replace('.tar.gz','') }}"
+    dest: "{{ hive_install_dir }}/hive"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. Hive 설치 검증
+# -----------------------------------------------------
+- name: "Check Hive binary"
+  stat:
+    path: "{{ hive_install_dir }}/hive/bin/hive"
+  register: hive_bin_check
+
+- name: "Verify Hive installation"
+  assert:
+    that:
+      - hive_bin_check.stat.exists
+    success_msg: "Good!.. | Hive installed successfully ({{ hive_install_dir }}/hive)"
+    fail_msg: "ERROR!.. | Hive binary not found. Check download or extraction."

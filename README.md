@@ -219,6 +219,21 @@ hadoop_url=https://dlcdn.apache.org/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.
 
 ###################################################
 # -------------------------------------------------
+# Hive 서버 그룹
+# -------------------------------------------------
+[Hive_Servers]
+ap
+
+# -------------------------------------------------
+# Hive 공통 변수
+# -------------------------------------------------
+[Hive_Servers:vars]
+hive_install_dir=/application
+hive_url=https://archive.apache.org/dist/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
+###################################################
+
+###################################################
+# -------------------------------------------------
 # Elasticsearch 서버 그룹
 # -------------------------------------------------
 [Elasticsearch_Servers]
@@ -434,6 +449,20 @@ pg_version=14
     - hadoop
 
 # =====================================================
+# Hive Servers
+# =====================================================
+- name: "[ Hive_Servers Settings.. ]"
+  hosts: Hive_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - hive
+
+# =====================================================
 # Elasticsearch Servers
 # =====================================================
 - name: "[ Elasticsearch_Servers Settings.. ]"
@@ -598,6 +627,9 @@ pg_version=14
 ### 🔹 hadoop → [`📂 main.yml`](./roles/hadoop/tasks/hadoop.md)
 - Hadoop 설치 및 심볼릭 링크 구성
 ---
+### 🔹 hive → [`📂 main.yml`](./roles/hive/tasks/hive.md)
+- Hive 설치 및 심볼릭 링크 구성
+---
 ### 🔹 elasticsearch → [`📂 main.yml`](./roles/elasticsearch/tasks/elasticsearch.md)
 - Elasticsearch APT 기반 설치
 ---
@@ -687,6 +719,8 @@ multi-server-setup-ansible/
     ├── spark/
     │   └── tasks/main.yml
     ├── hadoop/
+    │   └── tasks/main.yml
+    ├── hive/
     │   └── tasks/main.yml
     ├── elasticsearch/
     │   └── tasks/main.yml
